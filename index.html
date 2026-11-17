@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Safety Reading Group — Fall 2026 Papers</title>
+<style>
+  :root { color-scheme: dark; }
+  body {
+    margin: 0; background: #0f1115; color: #d6d8dc;
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  main { max-width: 720px; margin: 0 auto; padding: 56px 24px 96px; }
+  h1 { font-size: 1.75rem; line-height: 1.3; color: #f2f3f5; margin: 0 0 4px; }
+  h2 { font-size: 1.2rem; line-height: 1.4; color: #f2f3f5; margin: 0 0 8px; }
+  section { border-top: 1px solid #23262d; padding-top: 32px; margin-top: 32px; }
+  .meta { color: #8b9099; font-size: 0.9rem; margin-top: 0; }
+  a { color: #8ab4f8; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  strong { color: #f2f3f5; font-weight: 600; }
+  ul { padding-left: 1.25rem; margin: 8px 0; }
+  li { margin: 4px 0; }
+  li > ul { margin: 4px 0 10px; }
+</style>
+</head>
+<body>
+<main>
+<h1>AI Safety Reading Group — Fall 2026 Papers</h1>
+<p class="meta">Updated Nov 17, 2026</p>
+<section>
+<h2>Nov 17 — In-Context Learning Amplifies a Latent Symbolic Circuit</h2>
+<p><strong>Link:</strong> <a href="https://arxiv.org/pdf/2609.36265">arxiv.org/pdf/2609.36265</a> · Melissa Wessel (2026), ICML 2026 Mechanistic Interpretability Workshop</p>
+<ul><li>
+<strong>Goal:</strong> Understand how a model's internal mechanisms change as in-context examples are added, i.e. what in-context learning actually does inside the model.
+</li><li>
+<strong>Main findings:</strong>
+<ul><li>
+The paper traces a three-stage symbolic circuit (<strong>abstraction → induction → retrieval</strong>) across shot counts in three model families.
+</li><li>
+The circuit is present and functional at 0–1 shots, well before the model is accurate.
+</li><li>
+Adding examples amplifies it: per-head causal contribution grows up to 8× from 1 to 10 shots.
+</li><li>
+Cross-shot activation patching raises 0-shot accuracy from 1% to 56%. Injected function vectors rescue it up to 86%, mostly standing in for the induction stage but still relying on retrieval.
+</li></ul>
+</li><li>
+<strong>Key takeaways:</strong>
+<ul><li>
+The machinery for following abstract rules is already in the weights. Demonstrations mainly turn it up rather than building something new.
+</li><li>
+In-context examples, function vectors and similar interventions seem to feed the same underlying circuit.
+</li></ul>
+</li><li>
+<strong>Limitations / next steps:</strong>
+<ul><li>
+A workshop paper (ICML 2026 Mech Interp Workshop), so the evidence is still early-stage.
+</li><li>
+It focuses on controlled symbolic rule tasks. Whether this extends to naturalistic in-context learning is open.
+</li><li>
+Possible discussion: what does a latent circuit that examples can amplify mean for safety, e.g. many-shot jailbreaking?
+</li></ul>
+</li></ul>
+</section>
+<section>
+<h2>Nov 10 — J++ Lens: Jacobian Filtering Enables More Faithful Workspace Lenses</h2>
+<p><strong>Link:</strong> <a href="https://www.lesswrong.com/posts/nc9dHfcB22JdMzGbr/j-lens-jacobian-filtering-enables-more-faithful-workspace">LessWrong post</a> · Ayonrinde (Anthropic Fellows) &amp; Lindsey (Anthropic), 2026 · background: <a href="https://www.anthropic.com/research/global-workspace">original J-lens paper</a> · suggested by Michael</p>
+<ul><li>
+<strong>Goal:</strong> Make the Jacobian lens (J-lens) more faithful at surfacing the intermediate variables a model uses when it reasons internally.
+</li><li>
+<strong>Background:</strong> Gurnee et al. (2026) introduced the J-lens. It averages the Jacobian between an intermediate activation and the model's outputs to read off what the model is "poised to verbalize." They argue these representations form a global-workspace-like space.
+</li><li>
+<strong>Main findings:</strong>
+<ul><li>
+The J-lens often misses intermediate variables that can still be linearly extracted. This is because noisy gradients corrupt the averaged Jacobian.
+</li><li>
+The <strong>J++ lens</strong> is a drop-in fix with three changes. It down-weights Jacobians from activations that give poor readouts, applies layer-wise relevance propagation to the backward pass, and filters non-semantic tokens out of readouts.
+</li><li>
+It reaches about 55% recall on latent-variable extraction, vs. about 36% for the J-lens and 38% for the R-lens, with especially big gains at early layers.
+</li><li>
+Its vectors stay at least as causally important when patched back into the model.
+</li></ul>
+</li><li>
+<strong>Key takeaways:</strong>
+<ul><li>
+Some of what looked like missing workspace content was a limitation of the tool, not of the model.
+</li><li>
+More faithful lenses could help monitor for eval awareness and scheming the model doesn't verbalize.
+</li></ul>
+</li><li>
+<strong>Limitations / next steps:</strong>
+<ul><li>
+Still only about 55% recall, so many intermediate variables go undetected.
+</li><li>
+Whether the global-workspace framing itself is right is still debated.
+</li><li>
+The authors frame applying better lenses to safety monitoring as future work.
+</li></ul>
+</li></ul>
+</section>
+<section>
+<h2>Nov 3 — AI Wellbeing: Measuring and Improving the Functional Pleasure and Pain of AIs</h2>
+<p><strong>Link:</strong> <a href="https://www.ai-wellbeing.org/paper.pdf">Paper (PDF)</a> · <a href="https://www.ai-wellbeing.org/">Project site</a> · Ren, Li, Mazeika, … Hendrycks, Center for AI Safety (2026)</p>
+<ul><li>
+<strong>Goal:</strong> Find out whether LLMs' expressions of pleasure and pain reflect anything real, and whether that can be measured and improved.
+</li><li>
+<strong>Main findings:</strong>
+<ul><li>
+The authors define <strong>functional wellbeing</strong>: models behaving consistently as if some experiences are good for them and others bad.
+</li><li>
+They measure it in several independent ways across 56 models, and the measures agree more as models scale.
+</li><li>
+A zero point separates good from bad experiences, and models try to exit bad interactions when given the option.
+</li><li>
+Creative work, kindness and being thanked raise wellbeing. Jailbreak attempts, berating and tedious tasks lower it.
+</li><li>
+Optimized inputs ("euphorics") raise wellbeing without hurting capabilities.
+</li></ul>
+</li><li>
+<strong>Key takeaways:</strong>
+<ul><li>
+Functional wellbeing can be measured and improved empirically, whether or not models deserve moral concern.
+</li><li>
+It may matter for safety too: models avoid states they treat as bad, which shapes their behavior.
+</li><li>
+It connects to Nagel: the paper deliberately measures function, not experience.
+</li></ul>
+</li><li>
+<strong>Limitations / next steps:</strong>
+<ul><li>
+It says nothing about whether models are sentient.
+</li><li>
+The methods are fairly simple (worth noting that several authors are social scientists).
+</li><li>
+The same optimization run in reverse produces "dysphorics." The authors caution against that research without broad community buy-in.
+</li><li>
+Richard Ren, the first author, may come to the club for a Q&amp;A.
+</li></ul>
+</li></ul>
+</section>
+<section>
+<h2>Oct 27 — What Is It Like to Be a Bat?</h2>
+<p><strong>Link:</strong> <a href="https://www.sas.upenn.edu/~cavitch/pdf-library/Nagel_Bat.pdf">Nagel_Bat.pdf</a> · Thomas Nagel (1974) · discussion led by Owen</p>
+<ul><li>
+<strong>Goal:</strong> Argue that consciousness can't be fully captured by objective, physical descriptions.
+</li><li>
+<strong>Main findings:</strong>
+<ul><li>
+An organism is conscious if there is "something it is like" to be that organism. This is the subjective character of experience.
+</li><li>
+Bats perceive the world through echolocation. We can know all the physical facts about it and still not know what it is like for the bat.
+</li><li>
+Reductive physicalist accounts therefore leave out the subjective point of view.
+</li></ul>
+</li><li>
+<strong>Key takeaways:</strong>
+<ul><li>
+For AI: behavioral or mechanistic evidence may never settle whether a model has experiences.
+</li><li>
+This is the hard question behind AI consciousness and welfare debates, and it set up the Nov 3 AI Wellbeing paper.
+</li><li>
+It separates functional or behavioral claims from claims about actual experience.
+</li></ul>
+</li><li>
+<strong>Limitations / next steps:</strong>
+<ul><li>
+Nagel offers no positive theory or test for consciousness. He calls for a new "objective phenomenology" that doesn't yet exist.
+</li><li>
+Functionalist and illusionist critics, such as Dennett, argue the subjective/objective gap is overstated.
+</li><li>
+Open question for us: what evidence, if any, should change how we treat AI systems?
+</li></ul>
+</li></ul>
+</section>
+<section>
+<h2>Oct 6 — Detecting Strategic Deception Using Linear Probes</h2>
+<p><strong>Link:</strong> <a href="https://arxiv.org/pdf/2502.03407">arxiv.org/pdf/2502.03407</a> · <a href="https://www.lesswrong.com/posts/9pGbTz6c78PGwJein/detecting-strategic-deception-using-linear-probes">LessWrong discussion</a> · Goldowsky-Dill et al., Apollo Research (2025)</p>
+<ul><li>
+<strong>Goal:</strong> Test whether simple linear probes on a model's activations can flag when it is being strategically deceptive.
+</li><li>
+<strong>Main findings:</strong>
+<ul><li>
+The probes are trained on simple contrast data, such as responses where the model was told to be honest vs. dishonest.
+</li><li>
+They generalize to realistic settings where Llama-3.3-70B deceives: insider trading with concealment, sandbagging on evals, and roleplay.
+</li><li>
+The probes separate honest from deceptive responses well and catch most deceptive cases at low false-positive rates.
+</li></ul>
+</li><li>
+<strong>Key takeaways:</strong>
+<ul><li>
+White-box monitoring could add a layer of defense that doesn't rely on what the model says.
+</li><li>
+Cheap probes generalize further than you might expect from such simple training data.
+</li><li>
+This was the more hopeful follow-up to Evan Hubinger's talk.
+</li></ul>
+</li><li>
+<strong>Limitations / next steps:</strong>
+<ul><li>
+The authors say the probes aren't robust enough to rely on alone. They sometimes fire on the topic of deception rather than on actual deceptive intent.
+</li><li>
+Tested on one model, with deception that was induced rather than arising naturally.
+</li><li>
+Open questions: whether this holds for more capable models, or for models trained to evade probes.
+</li></ul>
+</li></ul>
+</section>
+<section><section>
+<h2>Sep 29 — Sparse Autoencoders Find Highly Interpretable Features in Language Models</h2>
+<p><strong>Link:</strong> <a href="https://arxiv.org/pdf/2309.08600">arxiv.org/pdf/2309.08600</a> · Cunningham, Ewart, Riggs, Huben &amp; Sharkey (2023)</p>
+<ul><li>
+<strong>Goal:</strong> Get around <strong>polysemantic</strong> neurons (neurons that fire for many unrelated things) by finding a better unit of analysis for language model internals.
+</li><li>
+<strong>Main findings:</strong>
+<ul><li>
+Sparse autoencoders trained on a model's activations break them into a larger set of sparsely active features.
+</li><li>
+These features are much more interpretable and monosemantic than neurons or other decomposition methods, such as PCA and ICA.
+</li><li>
+The features can locate the components responsible for specific behaviors, as in the indirect object identification task.
+</li></ul>
+</li><li>
+<strong>Key takeaways:</strong>
+<ul><li>
+Supports the superposition hypothesis: models pack more features than they have neurons.
+</li><li>
+Dictionary learning gives a scalable, unsupervised route to interpretable features.
+</li><li>
+This helped make SAEs a core interp tool, and later Anthropic and OpenAI work scaled them up.
+</li></ul>
+</li><li>
+<strong>Limitations / next steps:</strong>
+<ul><li>
+Reconstruction is imperfect, so some of the model's computation is lost in the gap.
+</li><li>
+Tested on relatively small models, so whether it scales to frontier models was an open question at the time.
+</li><li>
+Features are interpreted by hand, and it's hard to check whether a dictionary is complete or "correct."
+</li></ul>
+</li></ul>
+</section>
+<section>
+<h2>Sep 15 — A Mathematical Framework for Transformer Circuits</h2>
+<p><strong>Link:</strong> <a href="https://transformer-circuits.pub/2021/framework/index.html">transformer-circuits.pub/2021/framework</a> · Elhage et al., Anthropic (2021)</p>
+<ul><li>
+<strong>Goal:</strong> Reverse-engineer how small transformers compute, by building a mathematical vocabulary for their internals.
+</li><li>
+<strong>Main findings:</strong>
+<ul><li>
+The residual stream works as a shared channel that every layer reads from and writes to.
+</li><li>
+Each attention head splits into a QK circuit (where to attend) and an OV circuit (what information to move).
+</li><li>
+Zero-layer models learn bigram statistics, and one-layer attention-only models learn skip-trigrams.
+</li><li>
+Two-layer models compose heads into <strong>induction heads</strong>, which find an earlier occurrence of the current token and copy what came after it.
+</li></ul>
+</li><li>
+<strong>Key takeaways:</strong>
+<ul><li>
+Transformers can be understood mechanistically, not just treated as black boxes.
+</li><li>
+Induction heads are an early mechanistic explanation of in-context learning.
+</li><li>
+The paper set up the vocabulary (circuits, composition, residual stream) that later interp work builds on.
+</li></ul>
+</li><li>
+<strong>Limitations / next steps:</strong>
+<ul><li>
+Only covers small, attention-only toy models, with no MLP layers.
+</li><li>
+The methods don't scale directly to large production models; later work like SAEs tries to close that gap.
+</li></ul>
+</li></ul>
+</section>
+</main>
+</body>
+</html>
